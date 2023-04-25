@@ -8,6 +8,8 @@ import com.hanghae.myblog.entity.Comment;
 import com.hanghae.myblog.entity.User;
 import com.hanghae.myblog.entity.UserRole;
 import com.hanghae.myblog.exception.ExceptionMessage;
+import com.hanghae.myblog.exception.NoArticleException;
+import com.hanghae.myblog.exception.NoAuthException;
 import com.hanghae.myblog.repository.ArticleRepository;
 import com.hanghae.myblog.repository.CommentRepository;
 import com.hanghae.myblog.repository.UserRepository;
@@ -63,11 +65,11 @@ public class CommentService {
 
     private void checkCommentUser(User user,Comment comment) { // 댓글 주인 검증
         if(!user.getId().equals(comment.getUser().getId())){
-            throw new IllegalArgumentException(NO_AUTH.getMessage());
+            throw new NoAuthException(NO_AUTH.getMessage());
         }
     }
 
     private Article getArticle(Long articleId) { // 게시글 확인
-        return articleRepository.findById(articleId).orElseThrow(() -> new IllegalArgumentException(NO_ARTICLE.getMessage()));
+        return articleRepository.findById(articleId).orElseThrow(() -> new NoArticleException(NO_ARTICLE.getMessage()));
     }
 }

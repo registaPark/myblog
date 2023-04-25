@@ -7,6 +7,8 @@ import com.hanghae.myblog.entity.Article;
 import com.hanghae.myblog.entity.User;
 import com.hanghae.myblog.entity.UserRole;
 import com.hanghae.myblog.exception.ExceptionMessage;
+import com.hanghae.myblog.exception.NoArticleException;
+import com.hanghae.myblog.exception.NoAuthException;
 import com.hanghae.myblog.repository.ArticleRepository;
 import com.hanghae.myblog.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +44,7 @@ public class ArticleService {
         Article article = findArticle(articleId);
         if(!user.getRole().equals(UserRole.ADMIN)){
             if(!article.getUser().getId().equals(user.getId())){
-                throw new IllegalArgumentException(NO_AUTH.getMessage());
+                throw new NoAuthException(NO_AUTH.getMessage());
             }
         }
         article.updateArticle(articleRequestDto);
@@ -58,7 +60,7 @@ public class ArticleService {
         Article article = findArticle(articleId);
         if(!user.getRole().equals(UserRole.ADMIN)){
             if(!article.getUser().getId().equals(user.getId())){
-                throw new IllegalArgumentException(NO_AUTH.getMessage());
+                throw new NoAuthException(NO_AUTH.getMessage());
             }
         }
         articleRepository.deleteById(articleId);
@@ -67,6 +69,6 @@ public class ArticleService {
     }
 
     private Article findArticle(Long articleId){
-        return articleRepository.findById(articleId).orElseThrow(() -> new IllegalArgumentException(NO_ARTICLE.getMessage()));
+        return articleRepository.findById(articleId).orElseThrow(() -> new NoArticleException(NO_ARTICLE.getMessage()));
     }
 }
