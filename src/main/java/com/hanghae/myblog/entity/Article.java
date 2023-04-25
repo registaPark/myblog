@@ -1,5 +1,6 @@
 package com.hanghae.myblog.entity;
 
+import com.hanghae.myblog.dto.article.ArticleRequestDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -24,6 +25,12 @@ public class Article {
         this.title = title;
         this.content = content;
         this.user = user;
+    }
+
+    public Article updateArticle(ArticleRequestDto articleRequestDto){
+        this.title = articleRequestDto.getTitle();
+        this.content = articleRequestDto.getContent();
+        return this;
     }
 
 }
