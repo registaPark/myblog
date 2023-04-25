@@ -15,16 +15,12 @@ public class User extends Timestamped{
     private String username;
     private String password;
     @Enumerated(EnumType.STRING)
-    @Setter
     private UserRole role;
-
-
-    private User(String username, String password) {
+    @Builder
+    private User(String username, String password, UserRole role) {
         this.username = username;
         this.password = password;
-    }
-    public static User of(String username,String password){
-        return new User(username,password);
+        this.role = role;
     }
 }
 

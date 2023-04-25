@@ -5,6 +5,8 @@ import com.hanghae.myblog.dto.user.LoginRequestDto;
 import com.hanghae.myblog.dto.user.SignUpRequestDto;
 import com.hanghae.myblog.entity.User;
 import com.hanghae.myblog.entity.UserRole;
+import com.hanghae.myblog.exception.ExceptionMessage;
+import com.hanghae.myblog.exception.TokenNotValidException;
 import com.hanghae.myblog.jwt.JwtUtil;
 import com.hanghae.myblog.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.hanghae.myblog.exception.ExceptionMessage.*;
 
 @Service
 @Transactional
@@ -27,15 +31,16 @@ public class UserService {
 
     public ResponseDto signUp(SignUpRequestDto signUpRequestDto){
         if(userRepository.findByUsername(signUpRequestDto.getUsername()).isPresent()){
-            throw new IllegalArgumentException("이미 가입된 회원입니다.");
+            throw new IllegalArgumentException(DUPLICATED_USER.getMessage());
         }
         if(signUpRequestDto.isAdmin() && !signUpRequestDto.getAdminToken().equals(adminToken)){
-            throw new IllegalArgumentException("관리자 토큰이 일치하지 않습니다.");
+            throw new TokenNotValidException("관리자 토큰이 일치하지 않습니다.");
         }
         String encodePassword = passwordEncoder.encode(signUpRequestDto.getPassword()); // password encoding
-        User user = User.of(signUpRequestDto.getUsername(), encodePassword);
-        if(!signUpRequestDto.isAdmin()) user.setRole(UserRole.USER);
-        else user.setRole(UserRole.ADMIN);
+        String username = signUpRequestDto.getUsername();
+        User user;
+        if(!signUpRequestDto.isAdmin()) user = createUser(username,encodePassword,UserRole.ADMIN);
+        else user = createUser(username,encodePassword,UserRole.USER);
         userRepository.save(user);
         return new ResponseDto("회원가입 성공", HttpStatus.OK.value(),null);
     }
@@ -48,5 +53,9 @@ public class UserService {
         String token = jwtUtil.createToken(user.getUsername(), user.getId());
         response.setHeader(JwtUtil.AUTHORIZATION_HEADER,token);
         return new ResponseDto("로그인 성공",HttpStatus.OK.value(),null);
+    }
+
+    private User createUser(String username, String password, UserRole role) {
+        return User.builder().username(username).password(password).role(role).build();
     }
 }
