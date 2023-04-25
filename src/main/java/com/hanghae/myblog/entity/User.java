@@ -14,6 +14,10 @@ public class User extends Timestamped{
     private Long id;
     private String username;
     private String password;
+    @Enumerated(EnumType.STRING)
+    @Setter
+    private UserRole role;
+
 
     private User(String username, String password) {
         this.username = username;
