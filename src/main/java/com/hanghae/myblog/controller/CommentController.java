@@ -22,7 +22,7 @@ public class CommentController {
 
     @Secured("ROLE_ADMIN")
     @GetMapping("/all")
-    public List<CommentResponseDto> allComments(){
+    public   List<CommentResponseDto> allComments(){
         return commentService.findAllComment();
     }
     @PostMapping

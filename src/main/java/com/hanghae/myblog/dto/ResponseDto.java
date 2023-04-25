@@ -15,6 +15,12 @@ public class ResponseDto {
         this.data = data;
     }
 
+    public ResponseDto(String message, int statusCode) {
+        this.message = message;
+        this.statusCode = statusCode;
+        this.data = null;
+    }
+
     public ResponseDto() {
         this.message = null;
         this.statusCode = HttpStatus.BAD_REQUEST.value();

@@ -39,8 +39,8 @@ public class UserService {
         String encodePassword = passwordEncoder.encode(signUpRequestDto.getPassword()); // password encoding
         String username = signUpRequestDto.getUsername();
         User user;
-        if(!signUpRequestDto.isAdmin()) user = createUser(username,encodePassword,UserRole.ADMIN);
-        else user = createUser(username,encodePassword,UserRole.USER);
+        if(!signUpRequestDto.isAdmin()) user = createUser(username,encodePassword,UserRole.USER);
+        else user = createUser(username,encodePassword,UserRole.ADMIN);
         userRepository.save(user);
         return new ResponseDto("회원가입 성공", HttpStatus.OK.value(),null);
     }

@@ -25,11 +25,9 @@ import static com.hanghae.myblog.exception.ExceptionMessage.*;
 @Transactional(readOnly = true)
 public class ArticleService {
     private final ArticleRepository articleRepository;
-    private final UserRepository userRepository;
 
     @Transactional
-    public ResponseDto createArticle(ArticleRequestDto articleRequestDto, UserDetails userDetails){
-        User user = findUser(userDetails);
+    public ResponseDto createArticle(ArticleRequestDto articleRequestDto, User user){
         Article article = ArticleRequestDto.toEntity(articleRequestDto,user);
         articleRepository.save(article);
         return new ResponseDto("게시글 등록 완료",HttpStatus.CREATED.value(), ArticleResponseDto.from(article));
@@ -40,8 +38,7 @@ public class ArticleService {
         return ArticleResponseDto.from(article);
     }
     @Transactional
-    public ResponseDto updateArticle(Long articleId, ArticleRequestDto articleRequestDto,UserDetails userDetails){
-        User user = findUser(userDetails);
+    public ResponseDto updateArticle(Long articleId, ArticleRequestDto articleRequestDto,User user){
         Article article = findArticle(articleId);
         if(!user.getRole().equals(UserRole.ADMIN)){
             if(!article.getUser().getId().equals(user.getId())){
@@ -54,11 +51,10 @@ public class ArticleService {
     }
 
     public List<ArticleResponseDto> findAllArticle(){
-        return articleRepository.findAll().stream().map(a->ArticleResponseDto.from(a)).collect(Collectors.toList());
+        return articleRepository.findAllByOrderByModifiedAtDesc().stream().map(a->ArticleResponseDto.from(a)).collect(Collectors.toList());
     }
     @Transactional
-    public ResponseDto deleteArticle(Long articleId,UserDetails userDetails){
-        User user = findUser(userDetails);
+    public ResponseDto deleteArticle(Long articleId,User user){
         Article article = findArticle(articleId);
         if(!user.getRole().equals(UserRole.ADMIN)){
             if(!article.getUser().getId().equals(user.getId())){
@@ -67,14 +63,10 @@ public class ArticleService {
         }
         articleRepository.deleteById(articleId);
         articleRepository.flush();
-        return new ResponseDto("삭제 완료",HttpStatus.OK.value(),null);
+        return new ResponseDto("삭제 완료",HttpStatus.OK.value());
     }
 
     private Article findArticle(Long articleId){
         return articleRepository.findById(articleId).orElseThrow(() -> new IllegalArgumentException(NO_ARTICLE.getMessage()));
-    }
-
-    private User findUser(UserDetails userDetails) {
-        return userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new IllegalArgumentException(NO_USER.getMessage()));
     }
 }
