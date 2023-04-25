@@ -19,4 +19,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GlobalExceptionDto> illLegaError(final IllegalArgumentException e){
         return new ResponseEntity(new GlobalExceptionDto(e.getMessage(),HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(TokenNotValidException.class)
+    public ResponseEntity<GlobalExceptionDto> notValidTokenError(final TokenNotValidException e){
+        return new ResponseEntity<>(new GlobalExceptionDto(e.getMessage(),HttpStatus.BAD_REQUEST.value()),HttpStatus.BAD_REQUEST);
+    }
 }
