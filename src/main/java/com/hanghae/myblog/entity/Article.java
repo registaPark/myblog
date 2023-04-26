@@ -2,10 +2,9 @@ package com.hanghae.myblog.entity;
 
 import com.hanghae.myblog.dto.article.ArticleRequestDto;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +26,11 @@ public class Article extends Timestamped{
     @OrderBy("createdAt desc")
     private List<Comment> comments = new ArrayList<>();
 
+    @Column(nullable = false)
+    @ColumnDefault("0")
+    @Setter
+    private int likeCount;
+
     @Builder
     public Article(String title, String content, User user) {
         this.title = title;
@@ -39,5 +43,6 @@ public class Article extends Timestamped{
         this.content = articleRequestDto.getContent();
         return this;
     }
+
 
 }
