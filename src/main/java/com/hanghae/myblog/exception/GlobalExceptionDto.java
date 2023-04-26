@@ -1,6 +1,5 @@
 package com.hanghae.myblog.exception;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

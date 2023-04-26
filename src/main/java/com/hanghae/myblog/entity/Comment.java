@@ -1,16 +1,11 @@
 package com.hanghae.myblog.entity;
 
-import com.hanghae.myblog.dto.article.ArticleRequestDto;
-import com.hanghae.myblog.dto.comment.CommentRequestDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter

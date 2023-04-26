@@ -5,7 +5,6 @@ import com.hanghae.myblog.dto.user.LoginRequestDto;
 import com.hanghae.myblog.dto.user.SignUpRequestDto;
 import com.hanghae.myblog.entity.User;
 import com.hanghae.myblog.entity.UserRole;
-import com.hanghae.myblog.exception.ExceptionMessage;
 import com.hanghae.myblog.exception.TokenNotValidException;
 import com.hanghae.myblog.jwt.JwtUtil;
 import com.hanghae.myblog.repository.UserRepository;

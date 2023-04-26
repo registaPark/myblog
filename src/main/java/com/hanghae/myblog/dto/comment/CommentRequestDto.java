@@ -4,8 +4,6 @@ import com.hanghae.myblog.entity.Article;
 import com.hanghae.myblog.entity.Comment;
 import com.hanghae.myblog.entity.User;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter

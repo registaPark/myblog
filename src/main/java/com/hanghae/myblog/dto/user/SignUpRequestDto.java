@@ -1,11 +1,9 @@
 package com.hanghae.myblog.dto.user;
 
 import com.hanghae.myblog.entity.User;
-import com.hanghae.myblog.service.UserService;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.Value;
 
 @Getter
 @Setter

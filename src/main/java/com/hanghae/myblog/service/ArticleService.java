@@ -6,14 +6,11 @@ import com.hanghae.myblog.dto.article.ArticleResponseDto;
 import com.hanghae.myblog.entity.Article;
 import com.hanghae.myblog.entity.User;
 import com.hanghae.myblog.entity.UserRole;
-import com.hanghae.myblog.exception.ExceptionMessage;
 import com.hanghae.myblog.exception.NoArticleException;
 import com.hanghae.myblog.exception.NoAuthException;
 import com.hanghae.myblog.repository.ArticleRepository;
-import com.hanghae.myblog.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

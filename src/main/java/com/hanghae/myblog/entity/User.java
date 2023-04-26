@@ -2,7 +2,6 @@ package com.hanghae.myblog.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.security.core.userdetails.User.UserBuilder;
 
 
 @Entity(name = "users")
