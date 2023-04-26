@@ -1,9 +1,14 @@
 package com.hanghae.myblog.jwt;
 
+import com.hanghae.myblog.dto.TokenDto;
+import com.hanghae.myblog.entity.RefreshToken;
+import com.hanghae.myblog.entity.UserRole;
+import com.hanghae.myblog.repository.RefreshTokenRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,18 +19,24 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import java.security.Key;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Optional;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtUtil {
-    public static final String AUTHORIZATION_HEADER = "Authorization";
+    public static final String ACCESS_KEY = "ACCESS_KEY";
+    public static final String REFRESH_KEY = "REFRESH_KEY";
     public static final String AUTHORIZATION_KEY = "auth";
     public static final String BEARER_PREFIX = "Bearer ";
-    private static final long TOKEN_TIME = 60 * 60 * 1000L;
+    private static final Date ACCESS_TIME = Date.from(Instant.now().plus(1, ChronoUnit.HOURS));
+    private static final Date REFRESH_TIME = Date.from(Instant.now().plus(3,ChronoUnit.DAYS));
     private final UserDetailsService userDetailsService;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Value("${jwt.secret.key}")
     private String secretKey;
@@ -44,27 +55,27 @@ public class JwtUtil {
      * @return String
      * request header에서 토큰을 가져와서 반환
      */
-    public String resolveToken(HttpServletRequest request){
-        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+    public String resolveToken(HttpServletRequest request,String token){
+        String tokenName = token.equals(ACCESS_KEY) ? ACCESS_KEY : REFRESH_KEY;
+        String bearerToken = request.getHeader(tokenName);
         if(StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)){
             return bearerToken.substring(7);
         }
         return null;
     }
 
-    /**
-     *
-     * @param username
-     * @param userId
-     * @return String
-     * 토큰 생성 로직
-     */
-    public String createToken(String username,Long userId){
+    public TokenDto createAllToken(String username , UserRole role){
+        return new TokenDto(createToken(username,"Access",role),createToken(username,"Refresh",role));
+    }
+
+
+    public String createToken(String username, String type, UserRole role){
         Date date = new Date();
+        Date expTime = type.equals("Access") ? ACCESS_TIME : REFRESH_TIME;
         return BEARER_PREFIX+
                 Jwts.builder()
-                        .setSubject(username).claim(AUTHORIZATION_KEY,userId)
-                        .setExpiration(new Date(date.getTime()+TOKEN_TIME))
+                        .setSubject(username).claim(AUTHORIZATION_KEY,role)
+                        .setExpiration(expTime)
                         .setIssuedAt(date)
                         .signWith(key,signatureAlgorithm)
                         .compact();
@@ -92,6 +103,12 @@ public class JwtUtil {
         return false;
     }
 
+    public boolean refreshTokenValidation(String token){
+        if(!validateToken(token)) return false;
+        Optional<RefreshToken> refreshToken = refreshTokenRepository.findByUsername(getUserInfoFromToken(token).getSubject());
+        return refreshToken.isPresent() && token.equals(refreshToken.get().getRefreshToken());
+    }
+
     /**
      *
      * @param token
@@ -105,5 +122,9 @@ public class JwtUtil {
     public Authentication createAuthentication(String username) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         return new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
+    }
+
+    public void setHeaderAccessToken(HttpServletResponse response, String accessToken){
+        response.setHeader(ACCESS_KEY,accessToken);
     }
 }

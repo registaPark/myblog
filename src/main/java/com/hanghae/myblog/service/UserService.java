@@ -1,12 +1,15 @@
 package com.hanghae.myblog.service;
 
 import com.hanghae.myblog.dto.ResponseDto;
+import com.hanghae.myblog.dto.TokenDto;
 import com.hanghae.myblog.dto.user.LoginRequestDto;
 import com.hanghae.myblog.dto.user.SignUpRequestDto;
+import com.hanghae.myblog.entity.RefreshToken;
 import com.hanghae.myblog.entity.User;
 import com.hanghae.myblog.entity.UserRole;
 import com.hanghae.myblog.exception.TokenNotValidException;
 import com.hanghae.myblog.jwt.JwtUtil;
+import com.hanghae.myblog.repository.RefreshTokenRepository;
 import com.hanghae.myblog.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +18,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 import static com.hanghae.myblog.exception.ExceptionMessage.*;
 
@@ -25,6 +30,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
+    private final RefreshTokenRepository refreshTokenRepository;
     @Value("${admin.secretKey}")
     private String adminToken;
 
@@ -49,9 +55,19 @@ public class UserService {
         if(!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())){ // LoginRequestDto의 password 값과 encoding된 비밀번호 비교
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
-        String token = jwtUtil.createToken(user.getUsername(), user.getId());
-        response.setHeader(JwtUtil.AUTHORIZATION_HEADER,token);
-        return new ResponseDto("로그인 성공",HttpStatus.OK.value(),null);
+        TokenDto tokenDto = jwtUtil.createAllToken(user.getUsername(), user.getRole());
+        Optional<RefreshToken> refreshToken = refreshTokenRepository.findByUsername(loginRequestDto.getUsername());
+        if(refreshToken.isPresent()){
+            RefreshToken savedRefreshToken = refreshToken.get();
+            savedRefreshToken.updateToken(tokenDto.getRefreshToken().substring(7));
+            refreshTokenRepository.flush();
+        }else{
+            RefreshToken newToken = new RefreshToken(tokenDto.getRefreshToken().substring(7), user.getUsername());
+            refreshTokenRepository.save(newToken);
+        }
+        response.setHeader(JwtUtil.ACCESS_KEY,tokenDto.getAccessToken());
+        response.setHeader(JwtUtil.REFRESH_KEY,tokenDto.getRefreshToken());
+        return new ResponseDto("로그인 성공",HttpStatus.OK.value());
     }
 
     private User createUser(String username, String password, UserRole role) {
