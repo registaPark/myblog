@@ -19,6 +19,7 @@ public class ArticleResponseDto {
     private List<CommentResponseDto> comments;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
+    private int likeCount;
 
     public static ArticleResponseDto from(Article article){
         List<CommentResponseDto> comments = article.getComments().stream().map(c -> CommentResponseDto.from(c)).collect(Collectors.toList());
@@ -27,7 +28,8 @@ public class ArticleResponseDto {
                 article.getTitle(),
                 article.getContent(),
                 comments,article.getCreatedAt(),
-                article.getModifiedAt());
+                article.getModifiedAt(),
+                article.getLikeCount());
     }
 
 }

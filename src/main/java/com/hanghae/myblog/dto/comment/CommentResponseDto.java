@@ -12,11 +12,16 @@ import java.time.LocalDateTime;
 public class CommentResponseDto {
     private Long commentId;
     private String content;
-
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
+    private int likeCount;
 
     public static CommentResponseDto from(Comment comment){
-        return new CommentResponseDto(comment.getId(),comment.getContent(),comment.getCreatedAt(),comment.getModifiedAt());
+        return new CommentResponseDto(
+                comment.getId(),
+                comment.getContent(),
+                comment.getCreatedAt(),
+                comment.getModifiedAt(),
+                comment.getLikeCount());
     }
 }
