@@ -11,7 +11,6 @@ import com.hanghae.myblog.repository.ArticleRepository;
 import com.hanghae.myblog.repository.CommentRepository;
 import com.hanghae.myblog.repository.LikesRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +25,7 @@ public class LikesService {
     private final CommentRepository commentRepository;
     public ResponseDto likeArticle(User user, Long articleId) {
         Article article = articleRepository.findById(articleId).orElseThrow(() -> new NoArticleException("존재하지 않는 게시글"));
-        Optional<Likes> likesOptional = likesRepository.findByUserName(user.getUsername());
+        Optional<Likes> likesOptional = likesRepository.findByUserIdAndArticleId(user.getId(),articleId);
         if(likesOptional.isPresent()){
             likesRepository.deleteById(likesOptional.get().getId());
             article.decreaseLikeCount();
@@ -40,7 +39,7 @@ public class LikesService {
 
     public ResponseDto likeComment(User user, Long commentId) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NoCommentException("존재하지 않는 댓글"));
-        Optional<Likes> likesOptional = likesRepository.findByUserName(user.getUsername());
+        Optional<Likes> likesOptional = likesRepository.findByUserIdAndCommentId(user.getId(),commentId);
         if(likesOptional.isPresent()){
             likesRepository.deleteById(likesOptional.get().getId());
             comment.decreaseLikeCount();

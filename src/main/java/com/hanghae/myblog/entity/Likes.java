@@ -3,7 +3,7 @@ package com.hanghae.myblog.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Entity(name = "like")
+@Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Likes {

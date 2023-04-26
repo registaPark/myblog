@@ -16,15 +16,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/like")
 @RequiredArgsConstructor
 public class LikesController {
-    private final LikesService likeService;
+    private final LikesService likesService;
 
     @PostMapping("article/{articleId}")
     public ResponseEntity<ResponseDto> likeArticle(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long articleId){
-        return ResponseEntity.ok(likeService.likeArticle(userDetails.getUser(),articleId));
+        return ResponseEntity.ok(likesService.likeArticle(userDetails.getUser(),articleId));
     }
 
     @PostMapping("/comment/{commentId}")
     public ResponseEntity<ResponseDto> likeComment(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long commentId){
-        return ResponseEntity.ok(likeService.likeComment(userDetails.getUser(),commentId));
+        return ResponseEntity.ok(likesService.likeComment(userDetails.getUser(),commentId));
     }
 }
