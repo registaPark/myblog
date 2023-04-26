@@ -28,7 +28,6 @@ public class Article extends Timestamped{
 
     @Column(nullable = false)
     @ColumnDefault("0")
-    @Setter
     private int likeCount;
 
     @Builder
@@ -44,5 +43,10 @@ public class Article extends Timestamped{
         return this;
     }
 
-
+    public void increaseLikeCount(){
+        this.likeCount++;
+    }
+    public void decreaseLikeCount(){
+        if(likeCount>0) this.likeCount--;
+    }
 }

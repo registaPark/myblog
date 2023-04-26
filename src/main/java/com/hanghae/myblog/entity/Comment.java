@@ -34,4 +34,10 @@ public class Comment extends Timestamped {
         this.content = content;
         return this;
     }
+    public void increaseLikeCount(){
+        this.likeCount++;
+    }
+    public void decreaseLikeCount(){
+        if(likeCount>0) this.likeCount--;
+    }
 }
