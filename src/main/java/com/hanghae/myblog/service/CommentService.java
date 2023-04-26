@@ -9,14 +9,17 @@ import com.hanghae.myblog.entity.User;
 import com.hanghae.myblog.entity.UserRole;
 import com.hanghae.myblog.exception.NoArticleException;
 import com.hanghae.myblog.exception.NoAuthException;
+import com.hanghae.myblog.exception.NoCommentException;
 import com.hanghae.myblog.repository.ArticleRepository;
 import com.hanghae.myblog.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.hanghae.myblog.exception.ExceptionMessage.*;
@@ -31,10 +34,19 @@ public class CommentService {
     @Transactional
     public ResponseDto createComment(CommentRequestDto commentRequestDto, User user){
         Article article = getArticle(commentRequestDto.getArticleId());
-        Comment comment = Comment.builder().article(article).user(user).content(commentRequestDto.getContent()).build();
+        Long parentId = commentRequestDto.getParentId();
+        Comment comment;
+        Optional<Comment> findParentComment = commentRepository.findById(commentRequestDto.getParentId());
+        comment = Comment.builder().article(article).parent(findParentComment.get()).user(user).content(commentRequestDto.getContent()).build();
         commentRepository.save(comment);
         return new ResponseDto("댓글 작성 완료", HttpStatus.OK.value(),CommentResponseDto.from(comment));
     }
+
+    public CommentResponseDto findComment(Long commentId) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NoCommentException("댓글이 없습니다."));
+        return CommentResponseDto.from(comment);
+    }
+
     @Transactional
     public ResponseDto updateComment(Long commentId, CommentRequestDto commentRequestDto, User user){
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new IllegalArgumentException(NO_COMMENT.getMessage()));
@@ -69,4 +81,6 @@ public class CommentService {
     private Article getArticle(Long articleId) { // 게시글 확인
         return articleRepository.findById(articleId).orElseThrow(() -> new NoArticleException(NO_ARTICLE.getMessage()));
     }
+
+
 }

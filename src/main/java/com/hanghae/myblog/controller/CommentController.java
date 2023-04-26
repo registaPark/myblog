@@ -3,6 +3,7 @@ package com.hanghae.myblog.controller;
 import com.hanghae.myblog.dto.ResponseDto;
 import com.hanghae.myblog.dto.comment.CommentRequestDto;
 import com.hanghae.myblog.dto.comment.CommentResponseDto;
+import com.hanghae.myblog.entity.User;
 import com.hanghae.myblog.security.UserDetailsImpl;
 import com.hanghae.myblog.service.CommentService;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,10 @@ public class CommentController {
     public   List<CommentResponseDto> allComments(){
         return commentService.findAllComment();
     }
+
+    @GetMapping("/{commentId}")
+    public ResponseEntity<CommentResponseDto> findComment(@PathVariable Long commentId){return ResponseEntity.ok(commentService.findComment(commentId));}
+
     @PostMapping
     public ResponseEntity<ResponseDto> createComment(@RequestBody CommentRequestDto commentRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
         return ResponseEntity.ok(commentService.createComment(commentRequestDto,userDetails.getUser()));

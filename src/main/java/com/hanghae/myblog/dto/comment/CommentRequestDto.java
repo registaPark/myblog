@@ -8,15 +8,16 @@ import lombok.Getter;
 
 @Getter
 public class CommentRequestDto {
-    @NotNull(message = "게시글 아이디는 공백일 수 없습니다.")
+    private Long parentId;
     private Long articleId;
     @NotNull(message = "댓글은 공백일 수 없습니다.")
     private String content;
 
-    public static Comment toEntity(CommentRequestDto commentRequestDto, Article article, User user){
+    public static Comment toEntity(CommentRequestDto commentRequestDto, Article article, User user,Comment comment){
         return Comment.builder().content(commentRequestDto.getContent())
                 .article(article)
                 .user(user)
+                .parent(comment)
                 .build();
     }
 
