@@ -70,6 +70,11 @@ public class UserService {
         return new ResponseDto("로그인 성공",HttpStatus.OK.value());
     }
 
+    public ResponseDto logout(User user){
+        refreshTokenRepository.deleteByUsername(user.getUsername());
+        return new ResponseDto("로그아웃 성공",HttpStatus.OK.value());
+    }
+
     private User createUser(String username, String password, UserRole role) {
         return User.builder().username(username).password(password).role(role).build();
     }

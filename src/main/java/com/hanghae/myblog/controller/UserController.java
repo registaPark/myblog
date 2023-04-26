@@ -28,6 +28,11 @@ public class UserController {
         return new ResponseEntity<>(userService.login(loginRequestDto,response),HttpStatus.OK);
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<ResponseDto> logout(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        return ResponseEntity.ok(userService.logout(userDetails.getUser()));
+    }
+
     @GetMapping("/user-info")
     @ResponseBody
     public String getUserName(@AuthenticationPrincipal UserDetailsImpl userDetails){
