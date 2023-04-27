@@ -36,7 +36,7 @@ public class ArticleController {
         return ResponseEntity.ok(articleService.deleteArticle(articleId, userDetails.getUser()));
     }
     @GetMapping("/all")
-    public ResponseEntity<List<ArticleResponseDto>>  findAllArticle(){
-        return ResponseEntity.ok(articleService.findAllArticle());
+    public ResponseEntity<List<ArticleResponseDto>>  findAllArticle(@RequestParam int page , @RequestParam int size, @RequestParam String sort,@RequestParam boolean isAsc){
+        return ResponseEntity.ok(articleService.findAllArticle(page,size,sort,isAsc));
     }
 }
