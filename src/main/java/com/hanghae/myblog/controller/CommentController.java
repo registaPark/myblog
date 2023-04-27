@@ -3,6 +3,7 @@ package com.hanghae.myblog.controller;
 import com.hanghae.myblog.dto.ResponseDto;
 import com.hanghae.myblog.dto.comment.CommentRequestDto;
 import com.hanghae.myblog.dto.comment.CommentResponseDto;
+import com.hanghae.myblog.dto.reply.ReplyRequestDto;
 import com.hanghae.myblog.entity.User;
 import com.hanghae.myblog.security.UserDetailsImpl;
 import com.hanghae.myblog.service.CommentService;
@@ -29,9 +30,9 @@ public class CommentController {
     @GetMapping("/{commentId}")
     public ResponseEntity<CommentResponseDto> findComment(@PathVariable Long commentId){return ResponseEntity.ok(commentService.findComment(commentId));}
 
-    @PostMapping
-    public ResponseEntity<ResponseDto> createComment(@RequestBody CommentRequestDto commentRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return ResponseEntity.ok(commentService.createComment(commentRequestDto,userDetails.getUser()));
+    @PostMapping("article/{articleId}")
+    public ResponseEntity<ResponseDto> createComment(@PathVariable Long articleId ,CommentRequestDto commentRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return ResponseEntity.ok(commentService.createComment(articleId,commentRequestDto,userDetails.getUser()));
     }
 
     @PutMapping("/{commentId}")
@@ -42,5 +43,10 @@ public class CommentController {
     @DeleteMapping("/{commentId}")
     public ResponseEntity<ResponseDto> deleteComment(@PathVariable Long commentId,@AuthenticationPrincipal UserDetailsImpl userDetails){
         return ResponseEntity.ok(commentService.deleteComment(commentId,userDetails.getUser()));
+    }
+    //대댓글 작성
+    @PostMapping("/reply/{commentId}")
+    public ResponseEntity<ResponseDto> createReply(@PathVariable Long commentId, @RequestBody ReplyRequestDto replyRequestDto , @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return ResponseEntity.ok(commentService.createReply(commentId, userDetails.getUser(),replyRequestDto));
     }
 }

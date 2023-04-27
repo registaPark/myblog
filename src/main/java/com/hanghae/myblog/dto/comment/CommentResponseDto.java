@@ -1,5 +1,6 @@
 package com.hanghae.myblog.dto.comment;
 
+import com.hanghae.myblog.dto.reply.ReplyResponseDto;
 import com.hanghae.myblog.entity.Comment;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -17,17 +18,16 @@ public class CommentResponseDto {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
     private int likeCount;
-    private List<CommentResponseDto> comments;
+    private List<ReplyResponseDto> replyList;
 
     public static CommentResponseDto from(Comment comment){
-
         return new CommentResponseDto(
                 comment.getId(),
                 comment.getContent(),
                 comment.getCreatedAt(),
                 comment.getModifiedAt(),
                 comment.getLikeCount(),
-                comment.getChild().stream().map(c -> CommentResponseDto.from(c)).collect(Collectors.toList())
+                comment.getReplyList().stream().map(r -> ReplyResponseDto.from(r)).collect(Collectors.toList())
         );
     }
 }

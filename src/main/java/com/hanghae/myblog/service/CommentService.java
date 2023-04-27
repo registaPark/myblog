@@ -3,15 +3,15 @@ package com.hanghae.myblog.service;
 import com.hanghae.myblog.dto.ResponseDto;
 import com.hanghae.myblog.dto.comment.CommentRequestDto;
 import com.hanghae.myblog.dto.comment.CommentResponseDto;
-import com.hanghae.myblog.entity.Article;
-import com.hanghae.myblog.entity.Comment;
-import com.hanghae.myblog.entity.User;
-import com.hanghae.myblog.entity.UserRole;
+import com.hanghae.myblog.dto.reply.ReplyRequestDto;
+import com.hanghae.myblog.dto.reply.ReplyResponseDto;
+import com.hanghae.myblog.entity.*;
 import com.hanghae.myblog.exception.NoArticleException;
 import com.hanghae.myblog.exception.NoAuthException;
 import com.hanghae.myblog.exception.NoCommentException;
 import com.hanghae.myblog.repository.ArticleRepository;
 import com.hanghae.myblog.repository.CommentRepository;
+import com.hanghae.myblog.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,14 +30,12 @@ import static com.hanghae.myblog.exception.ExceptionMessage.*;
 public class CommentService {
     private final CommentRepository commentRepository;
     private final ArticleRepository articleRepository;
+    private final ReplyRepository replyRepository;
 
     @Transactional
-    public ResponseDto createComment(CommentRequestDto commentRequestDto, User user){
-        Article article = getArticle(commentRequestDto.getArticleId());
-        Long parentId = commentRequestDto.getParentId();
-        Comment comment;
-        Optional<Comment> findParentComment = commentRepository.findById(commentRequestDto.getParentId());
-        comment = Comment.builder().article(article).parent(findParentComment.get()).user(user).content(commentRequestDto.getContent()).build();
+    public ResponseDto createComment(Long articleId,CommentRequestDto commentRequestDto, User user){
+        Article article = getArticle(articleId);
+        Comment comment = CommentRequestDto.toEntity(commentRequestDto, article, user);
         commentRepository.save(comment);
         return new ResponseDto("댓글 작성 완료", HttpStatus.OK.value(),CommentResponseDto.from(comment));
     }
@@ -81,6 +79,16 @@ public class CommentService {
     private Article getArticle(Long articleId) { // 게시글 확인
         return articleRepository.findById(articleId).orElseThrow(() -> new NoArticleException(NO_ARTICLE.getMessage()));
     }
+    private Comment getComment(Long commentId){
+        return commentRepository.findById(commentId).orElseThrow(() -> new NoCommentException(NO_COMMENT.getMessage()));
+    }
 
+    @Transactional
+    public ResponseDto createReply(Long commentId, User user, ReplyRequestDto replyRequestDto) {
+        Comment comment = getComment(commentId);
+        Reply reply = ReplyRequestDto.toEntity(replyRequestDto, comment, user);
+        replyRepository.save(reply);
+        return new ResponseDto("대댓글 작성 완료",200, ReplyResponseDto.from(reply));
+    }
 
 }
