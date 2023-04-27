@@ -33,8 +33,6 @@ public class JwtUtil {
     public static final String REFRESH_KEY = "REFRESH_KEY";
     public static final String AUTHORIZATION_KEY = "auth";
     public static final String BEARER_PREFIX = "Bearer ";
-    private static final Date ACCESS_TIME = Date.from(Instant.now().plus(1, ChronoUnit.HOURS));
-    private static final Date REFRESH_TIME = Date.from(Instant.now().plus(3,ChronoUnit.DAYS));
     private final UserDetailsService userDetailsService;
     private final RefreshTokenRepository refreshTokenRepository;
 
@@ -71,7 +69,7 @@ public class JwtUtil {
 
     public String createToken(String username, String type, UserRole role){
         Date date = new Date();
-        Date expTime = type.equals("Access") ? ACCESS_TIME : REFRESH_TIME;
+        Date expTime = type.equals("Access") ? Date.from(Instant.now().plus(3, ChronoUnit.DAYS)) : Date.from(Instant.now().plus(3,ChronoUnit.DAYS));
         return BEARER_PREFIX+
                 Jwts.builder()
                         .setSubject(username).claim(AUTHORIZATION_KEY,role)
