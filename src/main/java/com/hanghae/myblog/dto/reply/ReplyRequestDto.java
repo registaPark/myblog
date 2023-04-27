@@ -1,7 +1,5 @@
 package com.hanghae.myblog.dto.reply;
 
-import com.hanghae.myblog.dto.comment.CommentRequestDto;
-import com.hanghae.myblog.entity.Article;
 import com.hanghae.myblog.entity.Comment;
 import com.hanghae.myblog.entity.Reply;
 import com.hanghae.myblog.entity.User;

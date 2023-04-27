@@ -4,7 +4,6 @@ import com.hanghae.myblog.dto.ResponseDto;
 import com.hanghae.myblog.dto.comment.CommentRequestDto;
 import com.hanghae.myblog.dto.comment.CommentResponseDto;
 import com.hanghae.myblog.dto.reply.ReplyRequestDto;
-import com.hanghae.myblog.entity.User;
 import com.hanghae.myblog.security.UserDetailsImpl;
 import com.hanghae.myblog.service.CommentService;
 import lombok.RequiredArgsConstructor;

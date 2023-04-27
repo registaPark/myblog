@@ -1,6 +1,5 @@
 package com.hanghae.myblog.repository;
 
-import com.hanghae.myblog.dto.article.ArticleResponseDto;
 import com.hanghae.myblog.entity.Article;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
