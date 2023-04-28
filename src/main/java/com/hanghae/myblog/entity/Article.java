@@ -27,6 +27,7 @@ public class Article extends Timestamped{
 
     @Column(nullable = false)
     @ColumnDefault("0")
+    @Version
     private int likeCount;
 
     @Builder

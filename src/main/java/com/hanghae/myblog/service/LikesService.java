@@ -24,7 +24,7 @@ public class LikesService {
     private final ArticleRepository articleRepository;
     private final CommentRepository commentRepository;
     public ResponseDto likeArticle(User user, Long articleId) {
-        Article article = articleRepository.findById(articleId).orElseThrow(() -> new NoArticleException("존재하지 않는 게시글"));
+        Article article = articleRepository.findForLikesArticle(articleId).orElseThrow(() -> new NoArticleException("존재하지 않는 게시글"));
         Optional<Likes> likesOptional = likesRepository.findByUserIdAndArticleId(user.getId(),articleId);
         if(likesOptional.isPresent()){
             likesRepository.deleteById(likesOptional.get().getId());
@@ -38,7 +38,7 @@ public class LikesService {
     }
 
     public ResponseDto likeComment(User user, Long commentId) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NoCommentException("존재하지 않는 댓글"));
+        Comment comment = commentRepository.findForLikesComment(commentId).orElseThrow(() -> new NoCommentException("존재하지 않는 댓글"));
         Optional<Likes> likesOptional = likesRepository.findByUserIdAndCommentId(user.getId(),commentId);
         if(likesOptional.isPresent()){
             likesRepository.deleteById(likesOptional.get().getId());
